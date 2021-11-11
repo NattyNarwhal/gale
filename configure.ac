@@ -95,6 +95,7 @@ termcap_lib=""
 AC_CHECK_LIB(termcap,tgetent,[termcap_lib="-ltermcap"],[
   AC_CHECK_LIB(ncurses,tgetent)])
 AC_CHECK_LIB(resolv,res_query)
+AC_CHECK_FUNCS([wcwidth wcswidth])
 
 test -d /usr/local/ssl/lib && LDFLAGS="$LDFLAGS -L/usr/local/ssl/lib"
 AC_CHECK_LIB(crypto,EVP_OpenInit,[GALE_LIBS="$GALE_LIBS -lcrypto"],[

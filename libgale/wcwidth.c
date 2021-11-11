@@ -32,6 +32,7 @@
  * in ISO 10646.
  */
 
+#ifndef HAVE_WCWIDTH
 int wcwidth(wchar_t ucs)
 {
   /* sorted list of non-overlapping intervals of non-spacing characters */
@@ -112,8 +113,9 @@ int wcwidth(wchar_t ucs)
      (ucs >= 0xff00 && ucs <= 0xff5f) || /* Fullwidth Forms */
      (ucs >= 0xffe0 && ucs <= 0xffe6));
 }
+#endif
 
-
+#ifndef HAVE_WCSWIDTH
 int wcswidth(const wchar_t *pwcs, size_t n)
 {
   int w, width = 0;
@@ -126,3 +128,4 @@ int wcswidth(const wchar_t *pwcs, size_t n)
 
   return width;
 }
+#endif
