@@ -1,6 +1,7 @@
 ## Process this file with automake to generate Makefile.in
 
 lib_LTLIBRARIES = libgale.la
+libgale_la_LIBADD = -lgc -lssl ../liboop/liboop.la ../liboop/liboop-adns.la ../liboop/liboop-rl.la
 noinst_PROGRAMS = crypto_test key_test
 
 # version:revision:age
@@ -26,7 +27,7 @@ libgale_la_SOURCES = \
     wcwidth.c
 
 crypto_test_SOURCES = crypto_test.c
-crypto_test_LDADD = $(GALE_LIBS)
+crypto_test_LDADD = libgale.la
 
 key_test_SOURCES = key_test.c
-key_test_LDADD = $(GALE_LIBS)
+key_test_LDADD = libgale.la
