@@ -97,8 +97,8 @@ AC_CHECK_LIB(termcap,tgetent,[termcap_lib="-ltermcap"],[
 AC_CHECK_LIB(resolv,res_query)
 AC_CHECK_FUNCS([wcwidth wcswidth])
 
-test -d /usr/local/ssl/lib && LDFLAGS="$LDFLAGS -L/usr/local/ssl/lib"
-AC_CHECK_LIB(crypto,EVP_OpenInit,[GALE_LIBS="$GALE_LIBS -lcrypto"],[
+PKG_CHECK_MODULES([SSL], [libcrypto libssl],
+  [GALE_LIBS="$GALE_LIBS $SSL_LIBS"], [
   AC_MSG_ERROR([cannot find OpenSSL crypto library])
 ])
 
@@ -149,10 +149,9 @@ fi
 AC_CHECK_LIB(dl,dlopen,[
   GALE_LIBS="$GALE_LIBS -ldl"
   AC_DEFINE(HAVE_LIBDL, 1, [The dynamic loader library is available.])])
-AC_CHECK_LIB(readline,readline,[
-  GALE_LIBS="$GALE_LIBS -lreadline"
+PKG_CHECK_MODULES([READLINE], [readline], [
   AC_DEFINE(HAVE_LIBREADLINE, 1, [The GNU readline library is available.])],
-  [],$termcap_lib)
+  []);
 
 if test x$use_socks = xtrue ; then
 AC_CHECK_LIB(socks,SOCKSinit,[
@@ -163,7 +162,8 @@ AC_CHECK_LIB(socks,SOCKSinit,[
 ])
 fi
 
-AC_CHECK_LIB(gc,GC_malloc,[GALE_LIBS="$GALE_LIBS -lgc"],[
+PKG_CHECK_MODULES([GC], [bdw-gc],
+  [GALE_LIBS="$GALE_LIBS $GC_LIBS"], [
   AC_MSG_ERROR([cannot find Boehm GC library, see INSTALL directions])
 ])
 
