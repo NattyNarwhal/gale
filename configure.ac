@@ -119,31 +119,8 @@ AM_CONDITIONAL([WITH_ICONV], [test "x$WITH_ICONV" = "xyes"])
 
 # Define ICONV in config.h if we're going to compile against it
 if test "x$WITH_ICONV" = "xyes"; then
-  dnl Make sure 'iconv' supports multibyte UTF-8 conversion.
-  iconv_lib=""
-  AC_CHECK_LIB(iconv,iconv,[iconv_lib="-liconv"])
-  AC_MSG_CHECKING([for working iconv])
-  save_libs="$LIBS"
-  save_flags="$CFLAGS"
-  LIBS="$LIBS $iconv_lib"
-  CFLAGS="$error_flags $save_flags -DICONV_CONST="
-  AC_TRY_RUN([#include "${srcdir}/iconvtest.c"],[
-    GALE_LIBS="$GALE_LIBS $iconv_lib"
-    AC_MSG_RESULT([yes, no const])
-    AC_DEFINE(HAVE_ICONV, 1, [iconv(3) is available and functional.])
-    AC_DEFINE(ICONV_CONST, [], [The second argument to iconv(3) is const.])
-  ],[
-    CFLAGS="$warning_flags $save_flags -DICONV_CONST=const"
-    AC_TRY_RUN([#include "${srcdir}/iconvtest.c"],[
-      GALE_LIBS="$GALE_LIBS $iconv_lib"
-      AC_MSG_RESULT([yes, const])
-      AC_DEFINE(HAVE_ICONV, 1, [iconv(3) is available and functional.])
-      AC_DEFINE(ICONV_CONST, const, [The second argument to iconv(3) is const.])
-    ],[AC_MSG_RESULT(no)],
-    [AC_MSG_RESULT([unknown, assuming no])])
-  ],[AC_MSG_RESULT([unknown, assuming no])])
-  LIBS="$save_libs"
-  CFLAGS="$save_flags"
+  AM_ICONV
+  GALE_LIBS="$GALE_LIBS $LTLIBICONV"
 fi
 
 AC_CHECK_LIB(dl,dlopen,[
