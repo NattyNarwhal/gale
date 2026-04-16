@@ -202,21 +202,10 @@ GALE_LIBS="$GALE_LIBS $termcap_lib"
 dnl Checks for header files.
 AC_CHECK_HEADERS(sys/bitypes.h sys/select.h curses.h term.h dlfcn.h readline/readline.h getopt.h rune.h wchar.h)
 
-test -d /usr/local/ssl/include && CPPFLAGS="$CPPFLAGS -I/usr/local/ssl/include"
-AC_CHECK_HEADERS(openssl/evp.h,,[AC_MSG_ERROR([cannot find OpenSSL headers])])
-
-test -d /usr/include/gc && CPPFLAGS="$CPPFLAGS -I/usr/include/gc"
-AC_CHECK_HEADERS(gc_backptr.h)
-AC_CHECK_HEADERS(gc.h,,[
-  AC_MSG_ERROR([cannot find Boehm GC headers, see INSTALL directions])
-])
-
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(short)
 AC_CHECK_SIZEOF(long)
-
-dnl Checks for library functions.
 
 dnl Output.
 
