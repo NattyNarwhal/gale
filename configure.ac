@@ -226,7 +226,6 @@ CPPFLAGS="-I\${top_srcdir}/include -I\${top_builddir}/include $CPPFLAGS"
 CPPFLAGS="-DGALE_SYS_DIR=\\\"${sysconfdir}/gale\\\" $CPPFLAGS"
 
 AC_SUBST(CFLAGS_NOWARN)
-AC_SUBST(ZEPHYR_LIBS)
 AC_SUBST(GALE_LIBS)
 AC_SUBST(PROG_LDCONFIG)
 
