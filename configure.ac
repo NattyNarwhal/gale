@@ -97,10 +97,7 @@ AC_CHECK_LIB(termcap,tgetent,[termcap_lib="-ltermcap"],[
 AC_CHECK_LIB(resolv,res_query)
 AC_CHECK_FUNCS([wcwidth wcswidth])
 
-PKG_CHECK_MODULES([SSL], [libcrypto libssl],
-  [GALE_LIBS="$GALE_LIBS $SSL_LIBS"], [
-  AC_MSG_ERROR([cannot find OpenSSL crypto library])
-])
+PKG_CHECK_MODULES([SSL], [libcrypto libssl], [GALE_LIBS="$GALE_LIBS $SSL_LIBS"])
 
 # This adds the option of compiling without using the iconv library,
 # which has proved troublesome for compilation on some platforms
@@ -139,10 +136,7 @@ AC_CHECK_LIB(socks,SOCKSinit,[
 ])
 fi
 
-PKG_CHECK_MODULES([GC], [bdw-gc],
-  [GALE_LIBS="$GALE_LIBS $GC_LIBS"], [
-  AC_MSG_ERROR([cannot find Boehm GC library, see INSTALL directions])
-])
+PKG_CHECK_MODULES([GC], [bdw-gc], [GALE_LIBS="$GALE_LIBS $GC_LIBS"])
 
 AC_MSG_CHECKING([for local copy of liboop])
 if test -f "${srcdir}/liboop/oop.h"; then
