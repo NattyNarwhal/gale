@@ -24,8 +24,8 @@ extern int wcwidth(wchar_t);
 static FILE *out_fp = NULL;
 static int term_cols = 0;
 
-static void output(int ch) {
-	fputc(ch,out_fp);
+static int output(int ch) {
+	return fputc(ch,out_fp);
 }
 
 static void tmode(FILE *fp,char id[2]) {
@@ -48,7 +48,7 @@ static void tmode(FILE *fp,char id[2]) {
 	assert(NULL == out_fp);
 	out_fp = fp;
 	if (init > 0 && isatty(1) && (cap = tgetstr(id,&stupid_pointer)))
-		tputs(cap,1,(TPUTS_ARG_3_T) output);
+		tputs(cap, 1, output);
 	assert(fp == out_fp);
 	out_fp = NULL;
 #else

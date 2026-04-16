@@ -56,17 +56,4 @@ char *strerror(int);
 #define SETSOCKOPT_ARG_4_T int *
 #endif
 
-/** \def TPUTS_ARG_3_T 
- *  The type of the third argument to tputs()
- *  (usually a function which accepts and returns 'int',
- *  but sometimes it accepts 'char' and sometimes it returns 'void'). */
-
-#if defined(OS_HPUX) || defined(OS_SOLARIS)
-#define TPUTS_ARG_3_T int(*)(char)
-#elif defined(OS_BSD)
-#define TPUTS_ARG_3_T void(*)(int)
-#else
-#define TPUTS_ARG_3_T int(*)(int)
-#endif
-
 #endif
