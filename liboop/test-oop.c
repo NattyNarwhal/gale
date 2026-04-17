@@ -19,36 +19,6 @@
 #include "oop.h"
 #include "oop-read.h"
 
-#ifdef HAVE_GLIB
-#include <glib.h>
-#include "oop-glib.h"
-GMainLoop *glib_loop;
-#endif
-
-#ifdef HAVE_TCL
-#include <tcl.h>
-#include "oop-tcl.h"
-#endif
-
-#ifdef HAVE_WWW
-/* Yuck: */
-#define HAVE_CONFIG_H
-#undef PACKAGE
-#undef VERSION
-
-#include "oop.h"
-#include "HTEvent.h"
-#include "oop-www.h"
-
-#include "WWWLib.h"
-#include "WWWInit.h"
-#endif
-
-#ifdef HAVE_READLINE
-#include <readline/readline.h>
-#include "oop-rl.h"
-#endif
-
 struct timer {
 	struct timeval tv;
 	int delay;
@@ -62,23 +32,11 @@ static void usage(void) {
 "usage:   test-oop <source> <sink> [<sink> ...]\n"
 "sources: sys      system event source\n"
 "         signal   system event source with signal adapter\n"
-#ifdef HAVE_GLIB
-"         glib     GLib source adapter\n"
-#endif
-#ifdef HAVE_TCL
-"         tcl      Tcl source adapter\n"
-#endif
 "sinks:   timer    some timers\n"
 "         signal   some signal handlers\n"
 "         echo     a stdin->stdout copy\n"
-#ifdef HAVE_READLINE
-"         readline like echo but with line editing\n"
-#endif
 #ifdef HAVE_ADNS
 "         adns     some asynchronous DNS lookups\n"
-#endif
-#ifdef HAVE_WWW
-"         libwww   some HTTP GET operations\n"
 #endif
 "         read:<delim-spec><nul-mode><shortrec-mode>[<maxrecsz>][,<bufsz>][:<data>]\n"
 "                  <delim-spec>:    n | s<delim> | k<delim>\n"
@@ -156,44 +114,6 @@ static void *stop_data(oop_source *source,int sig,void *data) {
 	return OOP_CONTINUE;
 }
 
-/* -- readline ------------------------------------------------------------- */
-
-#ifdef HAVE_READLINE
-
-static void on_readline(const char *input) {
-	if (NULL == input)
-		puts("\rreadline: EOF");
-	else {
-		fputs("readline: \"",stdout);
-		fputs(input,stdout);
-		puts("\"");
-	}
-}
-
-static void *stop_readline(oop_source *src,int sig,void *data) {
-	oop_readline_cancel(src);
-	src->cancel_signal(src,SIGQUIT,stop_readline,NULL);
-	rl_callback_handler_remove();
-	return OOP_CONTINUE;
-}
-
-static void add_readline(oop_source *src) {
-	rl_callback_handler_install(
-		(char *) "> ", /* readline isn't const-correct */
-		(VFunction *) on_readline);
-	oop_readline_register(src);
-	src->on_signal(src,SIGQUIT,stop_readline,NULL);
-}
-
-#else
-
-static void add_readline(oop_source *src) {
-	fputs("sorry, readline not available\n",stderr);
-	usage();
-}
-
-#endif
-
 /* -- adns ----------------------------------------------------------------- */
 
 #ifdef HAVE_ADNS
@@ -270,81 +190,6 @@ static void add_adns(oop_source *src) {
 
 static void add_adns(oop_source *src) {
 	fputs("sorry, adns not available\n",stderr);
-	usage();
-}
-
-#endif
-
-/* -- libwww --------------------------------------------------------------- */
-
-#ifdef HAVE_WWW
-
-static int remaining = 0;
-
-static int on_print(const char *fmt,va_list args) {
-	return (vfprintf(stdout,fmt,args));
-}
-
-static int on_trace (const char *fmt,va_list args) {
-	return (vfprintf(stderr,fmt,args));
-}
-
-static int on_complete(HTRequest *req,HTResponse *resp,void *x,int status) {
-	HTChunk *chunk = (HTChunk *) HTRequest_context(req);
-	char *address = HTAnchor_address((HTAnchor *) HTRequest_anchor(req));
-
-	HTPrint("%d: done with %s\n",status,address);
-	HTMemory_free(address);
-	HTRequest_delete(req);
-
-	if (NULL != chunk) HTChunk_delete(chunk);
-
-	if (0 == --remaining) {
-	/* stop ... */
-	}
-
-	return HT_OK;
-}
-
-static void get_uri(const char *uri) {
-	HTRequest *req = HTRequest_new();
-	HTRequest_setOutputFormat(req, WWW_SOURCE);
-	HTRequest_setContext(req,HTLoadToChunk(uri,req));
-	++remaining;
-}
-
-static void *stop_www(oop_source *source,int sig,void *x) {
-	oop_www_cancel();
-	HTProfile_delete();
-	source->cancel_signal(source,sig,stop_www,x);
-	return OOP_CONTINUE;
-}
-
-static void add_www(oop_source *source) {
-	puts("libwww: known bug: termination (^\\) may abort due to cached "
-             "connections, sorry.");
-	HTProfile_newNoCacheClient("test-www","1.0");
-	oop_www_register(source);
-
-	HTPrint_setCallback(on_print);
-	HTTrace_setCallback(on_trace);
-
-	HTNet_addAfter(on_complete, NULL, NULL, HT_ALL, HT_FILTER_LAST);
-	HTAlert_setInteractive(NO);
-
-	get_uri("http://ofb.net/~egnor/oop/");
-	get_uri("http://ofb.net/does.not.exist");
-	get_uri("http://slashdot.org/");
-	get_uri("http://www.w3.org/Library/");
-	get_uri("http://does.not.exist/");
-
-	source->on_signal(source,SIGQUIT,stop_www,NULL);
-}
-
-#else
-
-static void add_www(oop_source *source) {
-	fputs("sorry, libwww not available\n",stderr);
 	usage();
 }
 
@@ -527,14 +372,6 @@ static oop_source *create_source(const char *name) {
 		return oop_signal_source(source_signal);
 	}
 
-#ifdef HAVE_GLIB
-	if (!strcmp(name,"glib")) {
-		puts("glib: known bug: termination (^\\) won't quit, sorry.");
-		glib_loop = g_main_new(FALSE);
-		return oop_glib_new();
-	}
-#endif
-
 	fprintf(stderr,"unknown source \"%s\"\n",name);
 	usage();
 	return NULL;
@@ -548,11 +385,6 @@ static void run_source(const char *name) {
 		oop_sys_run_once(source_sys);
 		oop_sys_run(source_sys);
 	}
-
-#ifdef HAVE_GLIB
-	if (!strcmp(name,"glib"))
-		g_main_run(glib_loop);
-#endif
 }
 
 static void delete_source(const char *name) {
@@ -562,13 +394,6 @@ static void delete_source(const char *name) {
 		oop_signal_delete(source_signal);
 		oop_sys_delete(source_sys);
 	}
-
-#ifdef HAVE_GLIB
-	if (!strcmp(name,"glib")) {
-		oop_glib_delete();
-		g_main_destroy(glib_loop);
-	}
-#endif
 }
 
 static void add_sink(oop_source *src,const char *name) {
@@ -591,18 +416,8 @@ static void add_sink(oop_source *src,const char *name) {
 		return;
 	}
 
-	if (!strcmp(name,"readline")) {
-		add_readline(src);
-		return;
-	}
-
 	if (!strcmp(name,"adns")) {
 		add_adns(src);
-		return;
-	}
-
-	if (!strcmp(name,"libwww")) {
-		add_www(src);
 		return;
 	}
 
@@ -625,30 +440,11 @@ static void init(oop_source *source,int count,char *sinks[]) {
 		add_sink(source,sinks[i]);
 }
 
-/* -- tcl source ----------------------------------------------------------- */
-
-#ifdef HAVE_TCL
-static int tcl_count;
-static char **tcl_sinks;
-
-static int tcl_init(Tcl_Interp *interp) {
-	init(oop_tcl_new(),tcl_count,tcl_sinks);
-	return TCL_OK;
-} 
-#endif
-
 /* -- main ----------------------------------------------------------------- */
 
 int main(int argc,char *argv[]) {
 	if (argc < 3) usage();
 
-#ifdef HAVE_TCL
-	if (!strcmp(argv[1],"tcl")) { /* Tcl is a little ... different. */
-		tcl_count = argc - 2;
-		tcl_sinks = argv + 2;
-		Tcl_Main(1,argv,tcl_init);
-	} else
-#endif
 	{
 		oop_source * const source = create_source(argv[1]);
 		init(source,argc - 2,argv + 2);
