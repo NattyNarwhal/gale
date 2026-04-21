@@ -91,26 +91,8 @@ AC_CHECK_FUNCS([wcwidth wcswidth])
 
 PKG_CHECK_MODULES([SSL], [libcrypto libssl], [GALE_LIBS="$GALE_LIBS $SSL_LIBS"])
 
-# This adds the option of compiling without using the iconv library,
-# which has proved troublesome for compilation on some platforms
-AC_ARG_ENABLE(iconv,
-  [ --disable-iconv   Disable compilation with iconv],
-  [case "${enableval}" in
-     yes | no ) WITH_ICONV="${enableval}" ;;
-     *) AC_MSG_ERROR(bad value ${enableval} for --disable-iconv) ;;
-  esac],
-  [WITH_ICONV="yes"]
-)
-
-dnl Make sure we register this option with Automake, so we know whether to
-dnl descend into iconv for more configuration or not
-AM_CONDITIONAL([WITH_ICONV], [test "x$WITH_ICONV" = "xyes"])
-
-# Define ICONV in config.h if we're going to compile against it
-if test "x$WITH_ICONV" = "xyes"; then
-  AM_ICONV
-  GALE_LIBS="$GALE_LIBS $LTLIBICONV"
-fi
+AM_ICONV
+GALE_LIBS="$GALE_LIBS $LTLIBICONV"
 
 AC_CHECK_LIB(dl,dlopen,[
   GALE_LIBS="$GALE_LIBS -ldl"
