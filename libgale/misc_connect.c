@@ -58,13 +58,6 @@ struct gale_connect {
 	void *data;
 };
 
-#ifdef HAVE_SOCKS
-extern int Rconnect(int,const struct sockaddr *,size_t);
-#define CONNECT_F Rconnect
-#else
-#define CONNECT_F connect
-#endif
-
 static oop_call_fd on_write;
 static oop_call_time on_abort;
 ADNS_ONLY(static oop_adns_call on_lookup;)
@@ -201,7 +194,7 @@ static void add_address(
 		return;
 	}
 
-	while (CONNECT_F(addr->sock,(struct sockaddr *) &sin,sizeof(sin))) {
+	while (connect(addr->sock, (struct sockaddr *) &sin, sizeof(sin))) {
 		if (errno == EINPROGRESS) break;
 		if (errno != EINTR) {
 			gale_dprintf(5,"(connect %p) error connecting to %s: %s\n",
@@ -370,7 +363,7 @@ static void *on_write(oop_source *src,int fd,oop_event event,void *user) {
 
 	sa = (struct sockaddr *) &conn->addresses[i]->sin;
 	do errno = 0;
-	while (CONNECT_F(fd,sa,sizeof(struct sockaddr_in))
+	while (connect(fd, sa, sizeof(struct sockaddr_in))
 	   &&  EINTR == errno);
 
 	if (EISCONN != errno && 0 != errno) {

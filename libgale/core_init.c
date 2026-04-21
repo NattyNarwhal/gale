@@ -90,10 +90,6 @@ void gale_init(const char *s,int argc,char * const *argv) {
 	oop_malloc = gale_malloc_safe;
 	oop_free = gale_free;
 
-#ifdef HAVE_SOCKS
-	SOCKSinit(s);
-#endif
-
 	/* Identify the user. */
 
 	if ((user = getenv("LOGNAME"))) pwd = getpwnam(user);

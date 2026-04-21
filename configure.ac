@@ -22,14 +22,6 @@ if $use_adns ; then
   AC_DEFINE(HAVE_ADNS, 1, [The ADNS resolver library is available.])
 fi
 
-AC_ARG_WITH(socks,
-[  --with-socks            use SOCKS firewall proxy (requires libsocks)],
-[case "${withval}" in
-  yes) use_socks=true ;;
-  no)  use_socks=false ;;
-  *) AC_MSG_ERROR([bad value ${withval} for --with-socks]) ;;
-esac],[use_socks=false])
-
 dnl Configure subpackages
 AC_CONFIG_SUBDIRS(liboop)
 
@@ -126,15 +118,6 @@ AC_CHECK_LIB(dl,dlopen,[
 PKG_CHECK_MODULES([READLINE], [readline], [
   AC_DEFINE(HAVE_LIBREADLINE, 1, [The GNU readline library is available.])],
   []);
-
-if test x$use_socks = xtrue ; then
-AC_CHECK_LIB(socks,SOCKSinit,[
-  GALE_LIBS="$GALE_LIBS -lsocks"
-  AC_DEFINE(HAVE_SOCKS, 1, [The SOCKS firewall proxy is available.]) 
-],[
-  AC_MSG_ERROR([cannot find SOCKS library])
-])
-fi
 
 PKG_CHECK_MODULES([GC], [bdw-gc], [GALE_LIBS="$GALE_LIBS $GC_LIBS"])
 
