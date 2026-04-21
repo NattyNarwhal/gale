@@ -33,19 +33,6 @@ AC_PROG_INSTALL
 AC_PROG_YACC
 PROG_LDCONFIG=:
 
-dnl Add prefix to LDFLAGS and CPPFLAGS to help find previously installed foo.
-test NONE != "$exec_prefix" && LDFLAGS="$LDFLAGS -L${exec_prefix}/lib"
-if test NONE != "$prefix" ; then
-  CPPFLAGS="$CPPFLAGS -I${prefix}/include"
-  test NONE = "$exec_prefix" && LDFLAGS="$LDFLAGS -L${prefix}/lib"
-fi
-
-dnl People often put stuff in /usr/local.
-if test /usr/local != "$exec_prefix" -a /usr/local != "$prefix" ; then
-  CPPFLAGS="$CPPFLAGS -I/usr/local/include"
-  LDFLAGS="$LDFLAGS -L/usr/local/lib"
-fi
-
 dnl Add special GCC warnings, but don't enable them yet.
 warning_flags="$CFLAGS"
 error_flags="$CFLAGS"
