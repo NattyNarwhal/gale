@@ -29,7 +29,8 @@ static struct gale_packet *null_filter(struct gale_packet *msg,void *d) {
 static struct gale_text connect_report(void *d) {
 	struct connect *conn = (struct connect *) d;
 	struct sockaddr_in peer;
-	int len = sizeof(peer),fd = link_get_fd(conn->link);
+	socklen_t len = sizeof(peer);
+	int fd = link_get_fd(conn->link);
 	if (getpeername(fd,(struct sockaddr *) &peer,&len) 
 	||  AF_INET != peer.sin_family) 
 		return null_text;
@@ -90,7 +91,7 @@ struct connect *new_connect(
 {
 	int fd = link_get_fd(link);
 	struct connect *conn;
-	int len = sizeof(conn->peer);
+	socklen_t len = sizeof(conn->peer);
 	gale_create(conn);
 	conn->source = source;
 	conn->link = link;
