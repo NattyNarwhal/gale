@@ -1,14 +1,14 @@
 dnl Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.13)
-AC_INIT(gale,1.1happy)
+AC_PREREQ([2.72])
+AC_INIT([gale],[1.1happy])
 AC_CONFIG_SRCDIR(INSTALL)
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(include/gale/config.h:config.h.in)
 AC_CANONICAL_HOST
 AC_PROG_CC
-AM_PROG_LIBTOOL
+LT_INIT
 AM_MAINTAINER_MODE
 
 AC_ARG_ENABLE(adns,
@@ -194,7 +194,7 @@ AC_SUBST(PROG_LDCONFIG)
 
 AM_CONDITIONAL(BUILD_LIBOOP,test x$build_liboop = xtrue)
 
-AC_OUTPUT(
+AC_CONFIG_FILES([
 	gale-config
 	gale-install
 	Makefile 
@@ -206,4 +206,5 @@ AC_OUTPUT(
 	gdomain/Makefile
 	include/Makefile 
 	include/gale/Makefile
-)
+])
+AC_OUTPUT

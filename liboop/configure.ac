@@ -1,15 +1,15 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(liboop,1.0)
+AC_INIT([liboop],[1.0])
 AC_CONFIG_SRCDIR(INSTALL)
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE
 AC_CANONICAL_HOST
-AM_PROG_LIBTOOL
+LT_INIT
 AC_PROG_CC
 AC_PROG_INSTALL
 PROG_LDCONFIG=:
 
-AC_ARG_WITH(adns, AC_HELP_STRING(--without-adns,disable ADNS adapter))
+AC_ARG_WITH(adns, AS_HELP_STRING([--without-adns],[disable ADNS adapter]))
 
 dnl System type checks.
 case "$host" in
@@ -47,4 +47,5 @@ CFLAGS="-Wall -Wno-comment -Wmissing-prototypes -Wstrict-prototypes -Wpointer-ar
 AC_SUBST(PROG_LDCONFIG)
 AC_SUBST(ADNS_LIBS)
 AC_SUBST(LIBOOP_LIBS)
-AC_OUTPUT([Makefile liboop.pc])
+AC_CONFIG_FILES([Makefile liboop.pc])
+AC_OUTPUT
