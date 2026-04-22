@@ -3,14 +3,7 @@ project('gale', 'c', version: '1.2')
 gale_sys_dir = get_option('sysconfdir') + '/gale'
 add_global_arguments('-DGALE_SYS_DIR="' + gale_sys_dir + '"', language : 'c')
 
-# adns provides no pkg-config
-cc = meson.get_compiler('c')
-libadns = cc.find_library('adns')
-add_global_arguments('-DHAVE_ADNS=1', language : 'c')
-
 core_deps = [
-  libadns,
-  dependency('iconv'),
   dependency('dl'),
   dependency('libcrypto'),
   dependency('libssl'),
@@ -18,6 +11,31 @@ core_deps = [
   dependency('curses'),
   dependency('readline')
   ]
+
+# adns provides no pkg-config
+cc = meson.get_compiler('c')
+libadns = cc.find_library('adns', required: false)
+if libadns.found()
+  add_global_arguments('-DHAVE_ADNS=1', language: 'c')
+  core_deps += [libadns]
+endif
+
+iconv_dep = dependency('iconv', required: false)
+if iconv_dep.found()
+  add_global_arguments('-DHAVE_ICONV=1', language: 'c')
+  core_deps += [iconv_dep]
+  # meson doesn't check for iconv constiness
+  iconv_const_test = '''
+  #include <iconv.h>
+  size_t iconv (iconv_t cd, const char** inbuf, size_t *inbytesleft, char** outbuf, size_t *outbytesleft);
+  '''
+  if cc.compiles(iconv_const_test, name: 'iconv() prototype uses const')
+    add_global_arguments('-DICONV_CONST=const', language: 'c')
+  else
+    add_global_arguments('-DICONV_CONST=', language: 'c')
+  endif
+endif
+
 incdirs = include_directories(['include', 'liboop'])
 
 install_data = configuration_data()
