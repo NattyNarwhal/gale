@@ -124,7 +124,7 @@ fi
 GALE_LIBS="$GALE_LIBS $termcap_lib"
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(sys/select.h curses.h term.h dlfcn.h readline/readline.h rune.h wchar.h)
+AC_CHECK_HEADERS(sys/select.h curses.h term.h dlfcn.h readline/readline.h)
 
 dnl Output.
 
