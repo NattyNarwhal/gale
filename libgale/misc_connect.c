@@ -317,7 +317,9 @@ struct gale_connect *gale_make_connect(
 
 	gale_create(conn);
 	conn->source = src;
+#ifdef HAVE_ADNS
 	conn->adns = NULL;
+#endif
 	conn->avoid_local_port = avoid_local_port;
 	conn->found_local = 0;
 
