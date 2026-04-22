@@ -8,6 +8,7 @@ AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS(include/gale/config.h:config.h.in)
 AC_CANONICAL_HOST
 AC_PROG_CC
+AC_PROG_CC_C99
 LT_INIT
 AM_MAINTAINER_MODE
 
@@ -124,11 +125,6 @@ GALE_LIBS="$GALE_LIBS $termcap_lib"
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(sys/select.h curses.h term.h dlfcn.h readline/readline.h rune.h wchar.h)
-
-dnl Checks for typedefs, structures, and compiler characteristics.
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(short)
-AC_CHECK_SIZEOF(long)
 
 dnl Output.
 

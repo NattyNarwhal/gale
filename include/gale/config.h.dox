@@ -6,8 +6,6 @@
  *  information gathered from the system (like which libraries are present)
  *  as well as information supplied by the user. */
 
-/** \def SIZEOF_LONG Size in bytes of C 'long' type. */
-/** \def SIZEOF_SHORT Size in bytes of C 'short' type. */
 /** \def HAVE_CURSES_H System header file \<curses.h\> is present. */
 /** \def HAVE_DLFCN_H System header file \<dlfcn.h\> is present. */
 /** \def HAVE_READLINE_READLINE_H Readline header file \<readline/readline.h\> is present. */

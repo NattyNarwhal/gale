@@ -7,43 +7,20 @@
 #define GALE_TYPES_H
 
 #include <stddef.h>
+#include <stdint.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 #include "gale/compat.h"
 #include "gale/config.h"
 
-
-#if SIZEOF_INT == 4
-typedef unsigned int u32;
-typedef signed int s32;
-#elif SIZEOF_LONG == 4
-typedef unsigned long u32;
-typedef signed long s32;
-#elif SIZEOF_SHORT == 4
-typedef unsigned short u32;
-typedef signed short s32;
-#elif DOXYGEN_ONLY
 /** 32-bit unsigned integer. */
-typedef unsigned int u32;
+typedef uint32_t u32;
 /** 32-bit signed integer. */
-typedef signed int s32;
-#else
-#error Cannot find 32-bit data type!
-#endif
+typedef int32_t s32;
 
-#if SIZEOF_INT == 2
-typedef unsigned int u16;
-#elif SIZEOF_LONG == 2
-typedef unsigned long u16;
-#elif SIZEOF_SHORT == 2
-typedef unsigned short u16;
-#elif DOXYGEN_ONLY
 /** 16-bit unsigned integer. */
-typedef unsigned short u16;
-#else
-#error Cannot find 16-bit data type!
-#endif
+typedef uint16_t u16;
 
 /** 8-bit unsigned integer (byte). */
 typedef unsigned char u8;
