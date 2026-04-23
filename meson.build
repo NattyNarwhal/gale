@@ -1,6 +1,6 @@
 project('gale', 'c', version: '1.2')
 
-gale_sys_dir = get_option('sysconfdir') + '/gale'
+gale_sys_dir = join_paths(get_option('prefix'), get_option('sysconfdir')) + '/gale'
 add_global_arguments('-DGALE_SYS_DIR="' + gale_sys_dir + '"', language : 'c')
 
 core_deps = [
@@ -63,9 +63,9 @@ incdirs = include_directories(['include', 'liboop'])
 install_data = configuration_data()
 install_data.set('prefix', get_option('prefix'))
 install_data.set('exec_prefix', get_option('prefix'))
-install_data.set('sysconfdir', get_option('sysconfdir'))
-install_data.set('sbindir', get_option('sbindir'))
-install_data.set('bindir', get_option('bindir'))
+install_data.set('sysconfdir', join_paths(get_option('prefix'), get_option('sysconfdir')))
+install_data.set('sbindir', join_paths(get_option('prefix'), get_option('sbindir')))
+install_data.set('bindir', join_paths(get_option('prefix'), get_option('bindir')))
 configure_file(
   input: 'gale-install.in',
   output: 'gale-install',
