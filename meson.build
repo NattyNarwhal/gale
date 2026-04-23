@@ -60,6 +60,12 @@ endif
 
 incdirs = include_directories(['include', 'liboop'])
 
+# Create these directories per Makefile.am, should be world-readable
+install_emptydir(join_paths(gale_sys_dir, 'auth/trusted'))
+install_emptydir(join_paths(gale_sys_dir, 'auth/private'))
+install_emptydir(join_paths(gale_sys_dir, 'auth/local'), install_mode: 'rwxrwxrwx')
+install_emptydir(join_paths(gale_sys_dir, 'auth/cache'), install_mode: 'rwxrwxrwx')
+
 install_data = configuration_data()
 install_data.set('prefix', get_option('prefix'))
 install_data.set('exec_prefix', get_option('prefix'))
