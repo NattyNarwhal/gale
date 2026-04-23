@@ -51,3 +51,6 @@ libgale_srcs = [
   ]
 libgale = static_library('gale', libgale_srcs, dependencies: core_deps, include_directories : incdirs)
 libgale_dep = declare_dependency(include_directories: incdirs, link_with: libgale, dependencies: liboop_dep)
+
+executable('crypto_test', 'crypto_test.c', dependencies: libgale_dep)
+executable('key_test', 'key_test.c', dependencies: libgale_dep)

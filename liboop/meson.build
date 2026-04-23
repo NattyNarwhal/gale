@@ -9,5 +9,7 @@ liboop_srcs = [
   'sys.c'
   ]
 liboop = static_library('oop', liboop_srcs, dependencies: libadns)
-liboop_dep = declare_dependency(include_directories: incdirs, link_with: liboop)
+liboop_dep = declare_dependency(include_directories: incdirs, link_with: liboop, dependencies: libadns)
 core_deps += [liboop_dep]
+
+executable('test-oop', 'test-oop.c', dependencies: liboop_dep)
