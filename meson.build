@@ -4,20 +4,42 @@ gale_sys_dir = get_option('sysconfdir') + '/gale'
 add_global_arguments('-DGALE_SYS_DIR="' + gale_sys_dir + '"', language : 'c')
 
 core_deps = [
-  dependency('dl'),
   dependency('libcrypto'),
   dependency('libssl'),
-  dependency('bdw-gc'),
-  dependency('curses'),
-  dependency('readline')
+  dependency('bdw-gc')
   ]
 
-# adns provides no pkg-config
 cc = meson.get_compiler('c')
+
+# adns provides no pkg-config
 libadns = cc.find_library('adns', required: false)
 if libadns.found()
   add_global_arguments('-DHAVE_ADNS=1', language: 'c')
   core_deps += [libadns]
+endif
+
+dl_dep = dependency('dl', required: false)
+if dl_dep.found()
+  # assuming so...
+  add_global_arguments('-DHAVE_DLOPEN=1', language: 'c')
+  add_global_arguments('-DHAVE_DLFCN_H=1', language: 'c')
+  core_deps += [dl_dep]
+endif
+
+curses_dep = dependency('curses', required: false)
+if curses_dep.found()
+  # assuming that we have these headers, it's 2026
+  add_global_arguments('-DHAVE_CURSES_H=1', language: 'c')
+  add_global_arguments('-DHAVE_TERM_H=1', language: 'c')
+  core_deps += [curses_dep]
+endif
+
+readline_dep = dependency('readline', required: false)
+if readline_dep.found()
+  # assuming so...
+  add_global_arguments('-DHAVE_READLINE_READLINE_H=1', language: 'c')
+  add_global_arguments('-DHAVE_LIBREADLINE=1', language: 'c')
+  core_deps += [readline_dep]
 endif
 
 iconv_dep = dependency('iconv', required: false)
